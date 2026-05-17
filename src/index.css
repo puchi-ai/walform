@@ -1,0 +1,124 @@
+@import "tailwindcss";
+
+@plugin "tailwindcss-animate";
+@plugin "@tailwindcss/typography";
+
+@custom-variant dark (&:is(.dark *));
+
+@theme {
+  --color-border: var(--border);
+  --color-input: var(--input);
+  --color-ring: var(--ring);
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+
+  --color-secondary: var(--secondary);
+  --color-secondary-foreground: var(--secondary-foreground);
+
+  --color-destructive: var(--destructive);
+  --color-destructive-foreground: var(--destructive-foreground);
+
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
+
+  --color-popover: var(--popover);
+  --color-popover-foreground: var(--popover-foreground);
+
+  --color-card: var(--card);
+  --color-card-foreground: var(--card-foreground);
+
+  --radius-lg: var(--radius);
+  --radius-md: calc(var(--radius) - 2px);
+  --radius-sm: calc(var(--radius) - 4px);
+
+  --font-sans: 'Inter', system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
+  --font-display: 'Inter', sans-serif;
+}
+
+@layer base {
+  :root {
+    --background: oklch(0.98 0 0);
+    --foreground: oklch(0.15 0 0);
+    --card: oklch(1 0 0);
+    --card-foreground: oklch(0.15 0 0);
+    --popover: oklch(1 0 0);
+    --popover-foreground: oklch(0.15 0 0);
+    --primary: oklch(0.45 0.2 260); /* Robust Blue */
+    --primary-foreground: oklch(0.98 0 0);
+    --secondary: oklch(0.92 0.01 260);
+    --secondary-foreground: oklch(0.3 0.02 260);
+    --muted: oklch(0.95 0 0);
+    --muted-foreground: oklch(0.45 0.02 260);
+    --accent: oklch(0.9 0.02 260);
+    --accent-foreground: oklch(0.2 0.02 260);
+    --destructive: oklch(0.6 0.2 25);
+    --destructive-foreground: oklch(0.98 0 0);
+    --border: oklch(0.9 0 0);
+    --input: oklch(0.9 0 0);
+    --ring: oklch(0.45 0.2 260 / 50%);
+    --radius: 0.75rem;
+  }
+
+  .dark {
+    --background: oklch(0.1 0.01 260);
+    --foreground: oklch(0.95 0.01 260);
+    --card: oklch(0.15 0.02 260);
+    --card-foreground: oklch(0.95 0.01 260);
+    --popover: oklch(0.12 0.02 260);
+    --popover-foreground: oklch(0.95 0.01 260);
+    --primary: oklch(0.6 0.2 260);
+    --primary-foreground: oklch(0.1 0.01 260);
+    --secondary: oklch(0.2 0.03 260);
+    --secondary-foreground: oklch(0.85 0.02 260);
+    --muted: oklch(0.18 0.02 260);
+    --muted-foreground: oklch(0.7 0.02 260);
+    --accent: oklch(0.25 0.03 260);
+    --accent-foreground: oklch(0.95 0.02 260);
+    --destructive: oklch(0.5 0.2 25);
+    --destructive-foreground: oklch(0.95 0.01 260);
+    --border: oklch(0.25 0.02 260);
+    --input: oklch(0.25 0.02 260);
+    --ring: oklch(0.6 0.2 260 / 30%);
+  }
+}
+
+@layer base {
+  * {
+    @apply border-border outline-ring/50;
+  }
+  body {
+    @apply bg-background text-foreground font-sans antialiased;
+  }
+}
+
+/* Custom Utilities for Form Builder */
+.glass-panel {
+  @apply bg-card/40 border border-white/10 backdrop-blur-md shadow-2xl;
+}
+
+.glass-nav {
+  @apply backdrop-blur-md bg-background/60 border-b border-border;
+}
+
+.glass-sidebar {
+  @apply bg-background/40 border-r border-border;
+}
+
+.glass-input {
+  @apply bg-background/50 border border-border focus:ring-1 focus:ring-primary/50 focus:border-primary/50 text-foreground placeholder:text-muted-foreground;
+}
+
+.glass-button-primary {
+  @apply bg-primary hover:bg-primary/90 text-primary-foreground font-bold shadow-lg shadow-primary/30 border-none;
+}
+
+.builder-canvas {
+  background-image: radial-gradient(var(--border) 1px, transparent 1px);
+  background-size: 20px 20px;
+}

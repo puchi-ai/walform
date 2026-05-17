@@ -1,0 +1,6 @@
+{
+  "name": "Walrus Form",
+  "description": "A next-generation decentralized form builder powered by Sui, Walrus, and Seal.",
+  "requestFramePermissions": ["clipboard-write", "clipboard-read"],
+  "majorCapabilities": []
+}

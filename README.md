@@ -1,130 +1,167 @@
-# Walrus Form - Trình tạo Form Phi Tập Trung
+# 🦦 Walrus Form - Premium Decentralized Form Builder
 
-Walrus Form là một trình tạo form (form builder) cao cấp, hiệu năng cao và bảo mật tuyệt đối, hoạt động trên mạng lưu trữ phi tập trung **Walrus** (thương hiệu hiển thị **Nami Cloud**) và được bảo chứng bởi blockchain **Sui**. 
+Walrus Form is a modern, high-performance, and absolutely secure form builder that operates entirely on **Walrus** (a decentralized storage network developed by Mysten Labs) via the **Nami Cloud** branding, and is anchored by the **Sui blockchain** for state indexing and authorization.
 
-Dự án sở hữu thiết kế "Apple Glass" (glassmorphism) hiện đại, hỗ trợ đổi chế độ sáng/tối linh hoạt và tùy biến giao diện trực quan cho người dùng.
-
----
-
-## ✨ Tính năng chính
-
-- **Lưu trữ phi tập trung (Nami Cloud / Walrus)**: Tất cả cấu trúc form và câu trả lời được lưu trữ an toàn dưới dạng các blob phi tập trung.
-- **Nộp Form Không Cần Ví (Walletless & Gasless Responses)**: Người dùng phổ thông khi truy cập đường dẫn form công khai (`/f/:id`) có thể điền và nộp câu trả lời hoàn toàn miễn phí, không yêu cầu kết nối ví hay trả phí gas.
-- **Xác thực Admin bằng Smart Contract**: Chỉ những địa chỉ ví được đăng ký quyền Quản trị viên (Admin) trong Sui Smart Contract mới có quyền truy cập trang quản trị Dashboard, tạo, chỉnh sửa hoặc xóa form.
-- **Đồng nhất Giao diện & Live Preview**: Trình tùy biến giao diện thời gian thực đồng bộ tuyệt đối giữa màn hình chỉnh sửa và màn hình hiển thị chính thức, hỗ trợ phong cách card nhẹ nhàng, tối hoặc kính mờ tinh xảo.
-- **Tải lên Tệp tin Phi Tập Trung**: Tích hợp tải lên hình ảnh, video, tài liệu trực tiếp lên kho lưu trữ phi tập trung Nami Cloud.
+Crafted with a premium **"Apple Glass" (glassmorphism)** design, Walrus Form features fluid dark/light transitions, high-contrast inputs, responsive card styling, and an intuitive, real-time live preview panel.
 
 ---
 
-## 🛠 Công nghệ Sử dụng
+## ⚡ Core Architecture Map
 
-- **Frontend**: React 19 + Vite 6 + TypeScript + Tailwind CSS v4 + shadcn/ui.
-- **Quản lý trạng thái**: Zustand (useFormStore, useAuthStore, useThemeStore).
-- **Backend Proxy**: Express Server (chuyển tiếp và lưu cache an toàn lên S3/Nami Cloud).
-- **Smart Contract**: Move (Sui Blockchain) để đánh chỉ mục tìm kiếm và phân quyền admin.
+```mermaid
+graph TD
+    User((Visitor / Respondent)) --> Landing[Landing Page]
+    Landing --> Auth[Sui Admin Wallet Connect]
+    Auth --> Dashboard[Form Dashboard]
+    Dashboard --> Builder[Form Builder]
+    Dashboard --> Results[Submissions & CSV Export]
+    Builder --> PublicForm[Public Form Rendering]
+    PublicForm --> ExpressProxy[Express Backend Proxy]
+    ExpressProxy --> NamiCloud[(Nami Cloud / S3 Decentralized Storage)]
+    Builder --> SuiTx{Sui Move Smart Contract}
+    SuiTx --> SuiChain[(Sui Blockchain On-chain Index)]
+```
 
 ---
 
-## 🚀 Hướng dẫn Chạy ở Local
+## ✨ Features
 
-### 1. Cấu hình biến môi trường (`.env`)
-Tạo tệp `.env` tại thư mục gốc của dự án với các thông tin sau:
+- **Decentralized Storage (Nami Cloud / Walrus)**: Form structures, configuration properties, and user submissions are stored securely as decentralized blobs.
+- **Gasless & Walletless Response Submission**: Public form respondents can view, complete, and submit forms completely free of charge. No wallet, Sui browser extensions, or gas fees are required for the general public.
+- **Smart Contract Governance (Sui Move)**: Admin authentication, form publication rights, metadata indexing, and form deletion permissions are governed by smart contracts on the Sui blockchain.
+- **Unified Live Builder Preview**: Real-time theme visualizer and structure renderer integrated right in the builder canvas for precise form design.
+- **Decentralized File Uploads**: Built-in support for uploading images, videos (<10MB), and other attachments directly to Nami Cloud.
+
+---
+
+## ☁️ Nami Cloud Setup & Integration (Decentralized S3)
+
+> [!IMPORTANT]
+> **What is Nami Cloud?**
+> Nami Cloud is an S3-compatible cloud interface that runs directly on top of the **Walrus** decentralized storage protocol.
+> It gives you **decentralized, redundant, censorship-resistant storage** guarantees while allowing you to use standard, well-matured developer tools (like the AWS S3 SDK and command-line clients).
+
+### How to Register and Obtain S3 Keys:
+
+1. **Sign Up**: Navigate to the [Nami Cloud Dashboard](https://nami.cloud) (or the official console provider) and register a developer account.
+2. **Create a Bucket**: 
+   - Go to **Buckets** tab in the dashboard.
+   - Click **Create Bucket**, name it (e.g., `walform-storage`), and select your desired storage class.
+3. **Generate Developer Access Keys**:
+   - Go to **Developer Settings** or **Access Keys** section in your dashboard.
+   - Click **Create Access Key**.
+   - Copy the generated credentials safely:
+     - **Access Key ID**: Used to authenticate requests.
+     - **Secret Access Key**: Your private signing key.
+4. **Endpoint URL**: Note down your S3 endpoint (typically Nami Cloud uses an S3-compatible URL like `https://s3.nami.cloud` or standard AWS gateway endpoints depending on your region).
+
+---
+
+## 🛠 Local Setup & Installation
+
+### 1. Environment Configuration (`.env`)
+
+Create a `.env` file in the root directory. Copy the contents below and fill in your details:
+
 ```env
 PORT=3001
 VITE_API_URL=http://localhost:3001
 
-# Sui Network & Package Config
+# Sui Network & Move Package Configuration
 VITE_SUI_NETWORK=mainnet
-VITE_SUI_PACKAGE_ID=0x... # Điền ID Move Package đã deploy trên Sui
+VITE_SUI_PACKAGE_ID=0x... # The deployed Move Package ID on Sui
 
-# Cấu hình lưu trữ Nami Cloud (AWS S3)
-# Nếu bỏ trống các khóa AWS, Backend sẽ tự động fallback sang lưu trữ ở ổ đĩa cục bộ (server/storage)
-AWS_ACCESS_KEY_ID=your_access_key
-AWS_SECRET_ACCESS_KEY=your_secret_key
+# Nami Cloud (AWS S3-Compatible) Configuration
+# Note: If these AWS keys are omitted, the Backend Proxy automatically falls back 
+# to a local secure filesystem cache located in server/storage/
+AWS_ACCESS_KEY_ID=your_nami_cloud_access_key_id
+AWS_SECRET_ACCESS_KEY=your_nami_cloud_secret_access_key
 AWS_REGION=ap-southeast-1
-AWS_S3_BUCKET=namicloud-bucket
+AWS_S3_BUCKET=your_nami_cloud_bucket_name
+AWS_S3_ENDPOINT=https://s3.ap-south-1.amazonaws.com # Optional: Custom S3-compatible Endpoint for Nami Cloud
 ```
 
-### 2. Khởi chạy Backend Proxy
+### 2. Launching the Backend Proxy
+
+The Express server handles secure S3 API interactions, media caching, and forwards submissions without exposing admin secrets to the client.
+
 ```bash
-# Cài đặt thư viện
+# Install dependencies
 npm install
 
-# Khởi chạy Express Backend Server (chạy trên cổng 3001)
+# Start Express S3 Proxy (Runs on port 3001)
 npm run backend
 ```
 
-### 3. Khởi chạy Frontend
-Trong một terminal mới, khởi chạy Vite dev server:
+### 3. Launching the Frontend Application
+
+Open another terminal and start the Vite React development server:
+
 ```bash
-# Khởi chạy React App (chạy trên cổng 3000)
+# Start Frontend Developer server (Runs on port 3000)
 npm run dev
 ```
-Mở [http://localhost:3000](http://localhost:3000) trên trình duyệt để sử dụng.
+Navigate to [http://localhost:3000](http://localhost:3000) to start building forms!
 
 ---
 
-## 📦 Hướng dẫn Deploy Production
+## 📦 Production Deployment
 
-### Cách 1: Deploy lên Vercel (Khuyên dùng - Full-Stack)
-Vercel hỗ trợ đóng gói ứng dụng React tĩnh kèm theo API Node.js (Express serverless function) vô cùng tiện lợi nhờ cấu hình `vercel.json` đã được cài đặt sẵn.
+### Option 1: Vercel (Recommended - Full-Stack)
 
-1. **Chuẩn bị mã nguồn**: Đảm bảo dự án đã có tệp `vercel.json` và `api/index.ts`.
-2. **Import dự án lên Vercel**: 
-   * Truy cập [Vercel Dashboard](https://vercel.com) và import repository của bạn.
-3. **Cấu hình biến môi trường trên Vercel**:
-   Trong cài đặt dự án (Project Settings -> Environment Variables), hãy nhập đầy đủ các biến môi trường sau:
-   * `AWS_ACCESS_KEY_ID`
-   * `AWS_SECRET_ACCESS_KEY`
-   * `AWS_REGION`
-   * `AWS_S3_BUCKET`
-   * `VITE_SUI_PACKAGE_ID`
-   * `VITE_SUI_NETWORK`
-4. **Deploy**: Bấm nút **Deploy**. Vercel sẽ tự động build frontend tĩnh vào thư mục `dist`, đồng thời ánh xạ toàn bộ API `/api/*` về Serverless Node.js backend.
+Vercel can deploy the frontend as optimized static assets and host the Express proxy server as serverless Node.js endpoints (configured via `vercel.json` and `api/index.ts`).
+
+1. Ensure `vercel.json` and `api/index.ts` exist in your project root.
+2. Link your Github Repository to [Vercel Dashboard](https://vercel.com).
+3. Set your **Environment Variables** in Vercel settings:
+   - `AWS_ACCESS_KEY_ID`
+   - `AWS_SECRET_ACCESS_KEY`
+   - `AWS_REGION`
+   - `AWS_S3_BUCKET`
+   - `AWS_S3_ENDPOINT`
+   - `VITE_SUI_PACKAGE_ID`
+   - `VITE_SUI_NETWORK`
+4. Click **Deploy**. Vercel will build the frontend assets, set up standard caching, and expose serverless backend endpoints automatically!
 
 ---
 
-### Cách 2: Deploy lên Walrus Site (Phi tập trung hoàn toàn - Chỉ Frontend)
-Walrus hỗ trợ lưu trữ các trang web tĩnh trực tiếp trên mạng lưới phi tập trung dưới dạng **Walrus Site**. Do Walrus Site chỉ chạy được mã nguồn client-side tĩnh, bạn cần trỏ API lưu trữ về một máy chủ trung gian đã được deploy ở ngoài (ví dụ: máy chủ API Vercel của bạn ở Cách 1).
+### Option 2: Walrus Site (Fully Decentralized Frontend)
 
-#### Bước 1: Build mã nguồn Frontend
-Cập nhật biến môi trường `VITE_API_URL` trỏ tới địa chỉ Vercel API của bạn (ví dụ: `https://your-app.vercel.app`), sau đó chạy lệnh build:
+You can host the React frontend static assets directly on the decentralized web as a **Walrus Site**. Because a Walrus Site runs on client-side sandboxed logic, you will need to point the storage API endpoint to an external backend proxy server (such as your Vercel URL from Option 1).
+
+#### Step 1: Build the Static Frontend
+Update the `.env` variable `VITE_API_URL` to point to your live Vercel/Node API (e.g. `https://your-app.vercel.app`), then compile the optimized bundle:
 ```bash
-# Biên dịch tối ưu hóa React app
 npm run build
 ```
-Mã nguồn tĩnh hoàn chỉnh sẽ được tạo ra tại thư mục `dist/`.
+This outputs all final optimized assets into `dist/`.
 
-#### Bước 2: Deploy lên Walrus Site bằng CLI
-1. Tải và cài đặt công cụ CLI `site-builder` từ Walrus:
+#### Step 2: Publish using Walrus CLI Site Builder
+1. Install Mysten Labs' `site-builder` command-line utility.
+2. Initialize your decentralized site package:
    ```bash
-   # Tải bản phát hành phù hợp với OS của bạn từ github.com/mystenlabs/walrus
-   ```
-2. Khởi tạo và liên kết trang web của bạn:
-   ```bash
-   # Tạo site mới trên Sui network
    site-builder init --network testnet
    ```
-3. Đẩy toàn bộ thư mục tĩnh lên Walrus:
+3. Upload the build directory to the Walrus network:
    ```bash
    site-builder publish dist
    ```
-   Sau khi hoàn tất, Walrus CLI sẽ cung cấp cho bạn một đường dẫn phi tập trung có dạng:
-   `https://[walrus-site-object-id].walrus.site` để truy cập ứng dụng của bạn một cách an toàn và không thể bị ngăn chặn!
+The CLI tool will print a decentralized, censorship-resistant address:
+`https://[walrus-site-object-id].walrus.site`
 
 ---
 
-## 🛡 Hướng dẫn Deploy Move Smart Contract (Sui)
+## 🛡 Move Smart Contract Deployment (Sui)
 
-Để khởi tạo hoặc cập nhật chỉ mục form và danh sách ví Admin trên Sui blockchain:
+To redeploy or update the governance index registry on SUI:
 
-1. Chuyển hướng vào thư mục hợp đồng:
+1. Navigate to the contract directory:
    ```bash
    cd contracts/blob_index
    ```
-2. Deploy hợp đồng lên Sui network bằng Sui CLI:
+2. Build and publish via Sui CLI:
    ```bash
    sui client publish --gas-budget 20000000
    ```
-3. Lưu lại `Package ID` được sinh ra và cập nhật vào cấu hình `.env` (`VITE_SUI_PACKAGE_ID`).
-4. Sử dụng ví Owner để thêm/xóa các địa chỉ ví Admin khác thông qua hàm `register_admin` trên block explorer hoặc script của bạn.
+3. Save the returned `Package ID` and update `VITE_SUI_PACKAGE_ID` in your `.env`.
+4. As the Package Owner, you can whitelist additional admin addresses by calling the `register_admin` entrypoint function through a block explorer (like Suiscan) or custom automation scripts.

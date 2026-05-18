@@ -10,6 +10,7 @@ import { Toaster } from 'sonner';
 import { useAuthStore } from './store/useAuthStore';
 import { useThemeStore } from './store/useThemeStore';
 import { SuiWalletSync } from './components/SuiWalletSync';
+import { useLocation } from 'react-router-dom';
 
 const ProtectedRoute = ({ children }: { children: React.ReactNode }) => {
   const { isAuthenticated } = useAuthStore();
@@ -17,20 +18,31 @@ const ProtectedRoute = ({ children }: { children: React.ReactNode }) => {
   return <>{children}</>;
 };
 
-export default function App() {
+function ThemeManager() {
   const { mode } = useThemeStore();
+  const location = useLocation();
 
   useEffect(() => {
-    if (mode === 'dark') {
-      document.documentElement.classList.add('dark');
-    } else {
-      document.documentElement.classList.remove('dark');
+    const isStandaloneFormRoute = location.pathname.startsWith('/f/') || location.pathname.startsWith('/p/');
+    if (!isStandaloneFormRoute) {
+      if (mode === 'dark') {
+        document.documentElement.classList.add('dark');
+        document.documentElement.classList.remove('light');
+      } else {
+        document.documentElement.classList.add('light');
+        document.documentElement.classList.remove('dark');
+      }
     }
-  }, [mode]);
+  }, [mode, location.pathname]);
 
+  return null;
+}
+
+export default function App() {
   return (
     <Router>
-      <Toaster position="top-right" richColors closeButton />
+      <ThemeManager />
+      <Toaster position="bottom-right" richColors closeButton />
       <SuiWalletSync />
       <div className="relative min-h-screen bg-background text-foreground font-sans flex flex-col transition-colors duration-300">
         {/* Global Background Blobs from Frosted Glass Theme */}
@@ -45,7 +57,6 @@ export default function App() {
             <Route path="/" element={<Landing />} />
             <Route path="/auth" element={<Auth />} />
             <Route path="/f/:id" element={<PublicForm />} />
-            <Route path="/p/:id" element={<PublicForm preview />} />
             
             {/* Protected Routes */}
             <Route path="/dashboard" element={<ProtectedRoute><Dashboard /></ProtectedRoute>} />

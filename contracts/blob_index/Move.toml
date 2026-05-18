@@ -1,0 +1,9 @@
+[package]
+name = "blob_index"
+version = "0.0.1"
+edition = "2024.beta"
+
+[dependencies]
+
+[addresses]
+blob_index = "0x0"
